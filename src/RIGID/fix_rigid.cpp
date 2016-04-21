@@ -833,10 +833,12 @@ void FixRigid::initial_integrate(int vflag)
     vcm[ibody][2] += dtfm * fcm[ibody][2] * fflag[ibody][2];
 
     // update xcm by full step
-
-    xcm[ibody][0] += dtv * vcm[ibody][0];
-    xcm[ibody][1] += dtv * vcm[ibody][1];
-    xcm[ibody][2] += dtv * vcm[ibody][2];
+    int posUpdateFlag = (update->ntimestep % 10) == 0;
+    if (posUpdateFlag) {
+      xcm[ibody][0] += dtv * vcm[ibody][0];
+      xcm[ibody][1] += dtv * vcm[ibody][1];
+      xcm[ibody][2] += dtv * vcm[ibody][2];
+    }
 
     // update angular momentum by 1/2 step
 
@@ -851,8 +853,10 @@ void FixRigid::initial_integrate(int vflag)
 
     MathExtra::angmom_to_omega(angmom[ibody],ex_space[ibody],ey_space[ibody],
                                ez_space[ibody],inertia[ibody],omega[ibody]);
-    MathExtra::richardson(quat[ibody],angmom[ibody],omega[ibody],
-                          inertia[ibody],dtq);
+    if (posUpdateFlag) {
+      MathExtra::richardson(quat[ibody],angmom[ibody],omega[ibody],
+			    inertia[ibody],dtq);
+    }
     MathExtra::q_to_exyz(quat[ibody],
                          ex_space[ibody],ey_space[ibody],ez_space[ibody]);
   }
