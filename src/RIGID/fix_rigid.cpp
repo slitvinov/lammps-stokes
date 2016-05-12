@@ -833,7 +833,8 @@ void FixRigid::initial_integrate(int vflag)
     vcm[ibody][2] += dtfm * fcm[ibody][2] * fflag[ibody][2];
 
     // update xcm by full step
-    int posUpdateFlag = (update->ntimestep % 100) == 0;
+    // int posUpdateFlag = (update->ntimestep % 100) == 0;
+    int posUpdateFlag    = 1;
     if (posUpdateFlag) {
       xcm[ibody][0] += dtv * vcm[ibody][0];
       xcm[ibody][1] += dtv * vcm[ibody][1];
