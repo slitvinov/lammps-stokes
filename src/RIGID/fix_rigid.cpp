@@ -241,7 +241,7 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
   array_flag = 1;
   size_array_rows = nbody;
-  size_array_cols = 15;
+  size_array_cols = 18;
   global_freq = 1;
   extarray = 0;
 
@@ -2621,8 +2621,8 @@ double FixRigid::extract_erotational()
 
 /* ----------------------------------------------------------------------
    return attributes of a rigid body
-   15 values per body
-   xcm = 0,1,2; vcm = 3,4,5; fcm = 6,7,8; torque = 9,10,11; image = 12,13,14
+   18 values per body
+   xcm = 0,1,2; vcm = 3,4,5; fcm = 6,7,8; torque = 9,10,11; image = 12,13,14; omega = 15,16,17
 ------------------------------------------------------------------------- */
 
 double FixRigid::compute_array(int i, int j)
@@ -2633,5 +2633,7 @@ double FixRigid::compute_array(int i, int j)
   if (j < 12) return torque[i][j-9];
   if (j == 12) return (imagebody[i] & IMGMASK) - IMGMAX;
   if (j == 13) return (imagebody[i] >> IMGBITS & IMGMASK) - IMGMAX;
-  return (imagebody[i] >> IMG2BITS) - IMGMAX;
+  if (j == 14) return (imagebody[i] >> IMG2BITS) - IMGMAX;
+  if (j  < 18) return omega[i][j-15];
+  error->all(FLERR, "Illegal fix rigid compute index");
 }
