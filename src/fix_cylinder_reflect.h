@@ -13,21 +13,21 @@
 
 #ifdef FIX_CLASS
 
-FixStyle(wall/reflect,FixWallReflect)
+FixStyle(cylinder/reflect,FixCylinderReflect)
 
 #else
 
-#ifndef LMP_FIX_WALL_REFLECT_H
-#define LMP_FIX_WALL_REFLECT_H
+#ifndef LMP_FIX_CYLINDER_REFLECT_H
+#define LMP_FIX_CYLINDER_REFLECT_H
 
 #include "fix.h"
 
 namespace LAMMPS_NS {
 
-class FixWallReflect : public Fix {
+class FixCylinderReflect : public Fix {
  public:
-  FixWallReflect(class LAMMPS *, int, char **);
-  virtual ~FixWallReflect();
+  FixCylinderReflect(class LAMMPS *, int, char **);
+  virtual ~FixCylinderReflect();
   int setmask();
   void init();
   void post_integrate();
@@ -55,23 +55,23 @@ Self-explanatory.  Check the input script syntax and compare to the
 documentation for the command.  You can use -echo screen as a
 command-line option when running LAMMPS to see the offending line.
 
-E: Wall defined twice in fix wall/reflect command
+E: Wall defined twice in fix cylinder/reflect command
 
 Self-explanatory.
 
-E: Cannot use fix wall/reflect in periodic dimension
+E: Cannot use fix cylinder/reflect in periodic dimension
 
 Self-explanatory.
 
-E: Cannot use fix wall/reflect zlo/zhi for a 2d simulation
+E: Cannot use fix cylinder/reflect zlo/zhi for a 2d simulation
 
 Self-explanatory.
 
-E: Variable name for fix wall/reflect does not exist
+E: Variable name for fix cylinder/reflect does not exist
 
 Self-explanatory.
 
-E: Variable for fix wall/reflect is invalid style
+E: Variable for fix cylinder/reflect is invalid style
 
 Only equal-style variables can be used.
 
