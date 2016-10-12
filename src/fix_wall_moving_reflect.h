@@ -13,21 +13,21 @@
 
 #ifdef FIX_CLASS
 
-FixStyle(wall/reflect,FixWallReflect)
+FixStyle(wall/moving/reflect,FixWallMovingReflect)
 
 #else
 
-#ifndef LMP_FIX_WALL_REFLECT_H
-#define LMP_FIX_WALL_REFLECT_H
+#ifndef LMP_FIX_WALL_MOVING_REFLECT_H
+#define LMP_FIX_WALL_MOVING_REFLECT_H
 
 #include "fix.h"
 
 namespace LAMMPS_NS {
 
-class FixWallReflect : public Fix {
+class FixWallMovingReflect : public Fix {
  public:
-  FixWallReflect(class LAMMPS *, int, char **);
-  virtual ~FixWallReflect();
+  FixWallMovingReflect(class LAMMPS *, int, char **);
+  virtual ~FixWallMovingReflect();
   int setmask();
   void init();
   void post_integrate();
@@ -55,23 +55,23 @@ Self-explanatory.  Check the input script syntax and compare to the
 documentation for the command.  You can use -echo screen as a
 command-line option when running LAMMPS to see the offending line.
 
-E: Wall defined twice in fix wall/reflect command
+E: Wall defined twice in fix wall/moving/reflect command
 
 Self-explanatory.
 
-E: Cannot use fix wall/reflect in periodic dimension
+E: Cannot use fix wall/moving/reflect in periodic dimension
 
 Self-explanatory.
 
-E: Cannot use fix wall/reflect zlo/zhi for a 2d simulation
+E: Cannot use fix wall/moving/reflect zlo/zhi for a 2d simulation
 
 Self-explanatory.
 
-E: Variable name for fix wall/reflect does not exist
+E: Variable name for fix wall/moving/reflect does not exist
 
 Self-explanatory.
 
-E: Variable for fix wall/reflect is invalid style
+E: Variable for fix wall/moving/reflect is invalid style
 
 Only equal-style variables can be used.
 

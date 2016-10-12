@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "fix_wall_reflect.h"
+#include "fix_wall_moving_reflect.h"
 #include "atom.h"
 #include "comm.h"
 #include "update.h"
@@ -33,11 +33,11 @@ enum{NONE=0,EDGE,CONSTANT,VARIABLE};
 
 /* ---------------------------------------------------------------------- */
 
-FixWallReflect::FixWallReflect(LAMMPS *lmp, int narg, char **arg) :
+FixWallMovingReflect::FixWallMovingReflect(LAMMPS *lmp, int narg, char **arg) :
   Fix(lmp, narg, arg),
   nwall(0)
 {
-  if (narg < 4) error->all(FLERR,"Illegal fix wall/reflect command");
+  if (narg < 4) error->all(FLERR,"Illegal fix wall/moving/reflect command");
 
   // parse args
 
@@ -49,7 +49,7 @@ FixWallReflect::FixWallReflect(LAMMPS *lmp, int narg, char **arg) :
     if ((strcmp(arg[iarg],"xlo") == 0) || (strcmp(arg[iarg],"xhi") == 0) ||
         (strcmp(arg[iarg],"ylo") == 0) || (strcmp(arg[iarg],"yhi") == 0) ||
         (strcmp(arg[iarg],"zlo") == 0) || (strcmp(arg[iarg],"zhi") == 0)) {
-      if (iarg+2 > narg) error->all(FLERR,"Illegal fix wall/reflect command");
+      if (iarg+2 > narg) error->all(FLERR,"Illegal fix wall/moving/reflect command");
 
       int newwall;
       if (strcmp(arg[iarg],"xlo") == 0) newwall = XLO;
@@ -61,7 +61,7 @@ FixWallReflect::FixWallReflect(LAMMPS *lmp, int narg, char **arg) :
 
       for (int m = 0; (m < nwall) && (m < 6); m++)
         if (newwall == wallwhich[m])
-          error->all(FLERR,"Wall defined twice in fix wall/reflect command");
+          error->all(FLERR,"Wall defined twice in fix wall/moving/reflect command");
 
       wallwhich[nwall] = newwall;
       if (strcmp(arg[iarg+1],"EDGE") == 0) {
@@ -84,12 +84,12 @@ FixWallReflect::FixWallReflect(LAMMPS *lmp, int narg, char **arg) :
       iarg += 2;
 
     } else if (strcmp(arg[iarg],"units") == 0) {
-      if (iarg+2 > narg) error->all(FLERR,"Illegal wall/reflect command");
+      if (iarg+2 > narg) error->all(FLERR,"Illegal wall/moving/reflect command");
       if (strcmp(arg[iarg+1],"box") == 0) scaleflag = 0;
       else if (strcmp(arg[iarg+1],"lattice") == 0) scaleflag = 1;
-      else error->all(FLERR,"Illegal fix wall/reflect command");
+      else error->all(FLERR,"Illegal fix wall/moving/reflect command");
       iarg += 2;
-    } else error->all(FLERR,"Illegal fix wall/reflect command");
+    } else error->all(FLERR,"Illegal fix wall/moving/reflect command");
   }
 
   // error check
@@ -98,17 +98,17 @@ FixWallReflect::FixWallReflect(LAMMPS *lmp, int narg, char **arg) :
 
   for (int m = 0; m < nwall; m++) {
     if ((wallwhich[m] == XLO || wallwhich[m] == XHI) && domain->xperiodic)
-      error->all(FLERR,"Cannot use fix wall/reflect in periodic dimension");
+      error->all(FLERR,"Cannot use fix wall/moving/reflect in periodic dimension");
     if ((wallwhich[m] == YLO || wallwhich[m] == YHI) && domain->yperiodic)
-      error->all(FLERR,"Cannot use fix wall/reflect in periodic dimension");
+      error->all(FLERR,"Cannot use fix wall/moving/reflect in periodic dimension");
     if ((wallwhich[m] == ZLO || wallwhich[m] == ZHI) && domain->zperiodic)
-      error->all(FLERR,"Cannot use fix wall/reflect in periodic dimension");
+      error->all(FLERR,"Cannot use fix wall/moving/reflect in periodic dimension");
   }
 
   for (int m = 0; m < nwall; m++)
     if ((wallwhich[m] == ZLO || wallwhich[m] == ZHI) && domain->dimension == 2)
       error->all(FLERR,
-                 "Cannot use fix wall/reflect zlo/zhi for a 2d simulation");
+                 "Cannot use fix wall/moving/reflect zlo/zhi for a 2d simulation");
 
   // scale factors for CONSTANT and VARIABLE walls
 
@@ -141,7 +141,7 @@ FixWallReflect::FixWallReflect(LAMMPS *lmp, int narg, char **arg) :
 
 /* ---------------------------------------------------------------------- */
 
-FixWallReflect::~FixWallReflect()
+FixWallMovingReflect::~FixWallMovingReflect()
 {
   if (copymode) return;
 
@@ -151,7 +151,7 @@ FixWallReflect::~FixWallReflect()
 
 /* ---------------------------------------------------------------------- */
 
-int FixWallReflect::setmask()
+int FixWallMovingReflect::setmask()
 {
   int mask = 0;
   mask |= POST_INTEGRATE;
@@ -161,15 +161,15 @@ int FixWallReflect::setmask()
 
 /* ---------------------------------------------------------------------- */
 
-void FixWallReflect::init()
+void FixWallMovingReflect::init()
 {
   for (int m = 0; m < nwall; m++) {
     if (wallstyle[m] != VARIABLE) continue;
     varindex[m] = input->variable->find(varstr[m]);
     if (varindex[m] < 0)
-      error->all(FLERR,"Variable name for fix wall/reflect does not exist");
+      error->all(FLERR,"Variable name for fix wall/moving/reflect does not exist");
     if (!input->variable->equalstyle(varindex[m]))
-      error->all(FLERR,"Variable for fix wall/reflect is invalid style");
+      error->all(FLERR,"Variable for fix wall/moving/reflect is invalid style");
   }
 
   int nrigid = 0;
@@ -183,7 +183,7 @@ void FixWallReflect::init()
 
 /* ---------------------------------------------------------------------- */
 
-void FixWallReflect::post_integrate()
+void FixWallMovingReflect::post_integrate()
 {
   int i,dim,side;
   double coord;
