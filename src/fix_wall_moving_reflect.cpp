@@ -131,14 +131,17 @@ FixWallMovingReflect::FixWallMovingReflect(LAMMPS *lmp, int narg, char **arg) :
   for (int m = 0; m < nwall; m++)
     if (wallstyle[m] != EDGE) flag = 1;
 
-  if (flag) {
-    if (scaleflag) {
-      xscale = domain->lattice->xlattice;
-      yscale = domain->lattice->ylattice;
-      zscale = domain->lattice->zlattice;
-    }
-    else xscale = yscale = zscale = 1.0;
+  if (scaleflag) {
+    xscale = domain->lattice->xlattice;
+    yscale = domain->lattice->ylattice;
+    zscale = domain->lattice->zlattice;
+  }
+  else xscale = yscale = zscale = 1.0;
 
+  v0[0] *= xscale; v0[1] *= yscale; v0[2] *= zscale;
+  v1[0] *= xscale; v1[1] *= yscale; v1[2] *= zscale;
+
+  if (flag) {
     for (int m = 0; m < nwall; m++) {
       if (wallstyle[m] != CONSTANT) continue;
       if (wallwhich[m] < YLO) coord0[m] *= xscale;
