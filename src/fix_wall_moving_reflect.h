@@ -40,6 +40,8 @@ class FixWallMovingReflect : public Fix {
   int varindex[6];
   int varflag;
   double xscale,yscale,zscale;
+  double v0[3]; /* velocities of the walls */
+  double v1[3];
 };
 
 }

@@ -41,6 +41,9 @@ FixWallMovingReflect::FixWallMovingReflect(LAMMPS *lmp, int narg, char **arg) :
 
   // parse args
 
+  v0[0]=v0[1]=v0[2]=0.0;
+  v1[0]=v1[1]=v1[2]=0.0;
+
   nwall = 0;
   int scaleflag = 1;
 
@@ -89,6 +92,18 @@ FixWallMovingReflect::FixWallMovingReflect(LAMMPS *lmp, int narg, char **arg) :
       else if (strcmp(arg[iarg+1],"lattice") == 0) scaleflag = 1;
       else error->all(FLERR,"Illegal fix wall/moving/reflect command");
       iarg += 2;
+    } else if (strcmp(arg[iarg],"v0") == 0) {
+      if (iarg+4 > narg) error->all(FLERR,"Illegal wall/moving/reflect command");
+      v0[0] = force->numeric(FLERR,arg[iarg+1]);
+      v0[1] = force->numeric(FLERR,arg[iarg+2]);
+      v0[2] = force->numeric(FLERR,arg[iarg+3]);
+      iarg += 4;
+    } else if (strcmp(arg[iarg],"v1") == 0) {
+      if (iarg+4 > narg) error->all(FLERR,"Illegal wall/moving/reflect command");
+      v1[0] = force->numeric(FLERR,arg[iarg+1]);
+      v1[1] = force->numeric(FLERR,arg[iarg+2]);
+      v1[2] = force->numeric(FLERR,arg[iarg+3]);
+      iarg += 4;
     } else error->all(FLERR,"Illegal fix wall/moving/reflect command");
   }
 
@@ -214,12 +229,16 @@ void FixWallMovingReflect::post_integrate()
         if (side == 0) {
           if (x[i][dim] < coord) {
             x[i][dim] = coord + (coord - x[i][dim]);
-            v[i][dim] = -v[i][dim];
+            v[i][0] = 2*v0[0] - v[i][0];
+            v[i][1] = 2*v0[1] - v[i][1];
+            v[i][2] = 2*v0[2] - v[i][2];
           }
         } else {
           if (x[i][dim] > coord) {
             x[i][dim] = coord - (x[i][dim] - coord);
-            v[i][dim] = -v[i][dim];
+            v[i][0] = 2*v1[0] - v[i][0];
+            v[i][1] = 2*v1[1] - v[i][1];
+            v[i][2] = 2*v1[2] - v[i][2];
           }
         }
       }
